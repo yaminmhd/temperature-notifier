@@ -1,24 +1,26 @@
 const webdriver = require("selenium-webdriver");
-const firefox = require("selenium-webdriver/firefox");
+const chrome = require("selenium-webdriver/chrome");
 
 const group1Url = process.env.GROUP1_URL;
 const group2Url = process.env.GROUP2_URL;
 
 function createWebDriver() {
-  let options = new firefox.Options();
-  options.setBinary(process.env.GECKODRIVER_PATH);
+  let options = new chrome.Options();
+  options.setChromeBinaryPath(process.env.CHROME_BINARY_PATH);
   options.addArguments("--headless");
   options.addArguments("--disable-gpu");
   options.addArguments("--no-sandbox");
 
-  let serviceBuilder = new firefox.ServiceBuilder(process.env.FIREFOX_BIN);
+  let serviceBuilder = new chrome.ServiceBuilder(
+    process.env.CHROME_DRIVER_PATH
+  );
 
-  const firefoxDriver = new webdriver.Builder()
-    .forBrowser("firefox")
-    .setFirefoxOptions(options)
-    .setFirefoxService(serviceBuilder)
+  const chromeDriver = new webdriver.Builder()
+    .forBrowser("chrome")
+    .setChromeOptions(options)
+    .setChromeService(serviceBuilder)
     .build();
-  return firefoxDriver;
+  return chromeDriver;
 }
 
 async function getDataFromGroup(id, groupUrl, shift) {
@@ -27,7 +29,7 @@ async function getDataFromGroup(id, groupUrl, shift) {
   let aaSubSet;
 
   const driver = createWebDriver();
-  console.log("driver created");
+  console.log("chrome driver created", driver);
   await driver.get(groupUrl);
   await driver.wait(
     webdriver.until.elementLocated(webdriver.By.id("member-table"))
