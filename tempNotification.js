@@ -61,6 +61,7 @@ function processData(id, shift, data) {
 
 async function getDataFromGroup(id, groupUrl, shift) {
   const driver = createWebDriver();
+  driver.manage().deleteAllCookies();
   console.log("chrome driver created", driver);
   await driver.get(groupUrl);
   await driver.wait(
