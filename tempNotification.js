@@ -20,7 +20,7 @@ async function getDataFromGroup(id, groupUrl, shift) {
   let aaSubSet;
 
   const driver = createWebDriver();
-  console.log("driver created");
+  console.log("firefox driver created");
   await driver.get(groupUrl);
   await driver.wait(
     webdriver.until.elementLocated(webdriver.By.id("member-table"))
