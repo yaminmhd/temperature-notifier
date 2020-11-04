@@ -8,8 +8,6 @@ function createWebDriver() {
   let options = new chrome.Options();
   options.setChromeBinaryPath(process.env.CHROME_BINARY_PATH);
   options.addArguments("--headless");
-  options.addArguments("--disable-gpu");
-  options.addArguments("--no-sandbox");
 
   let serviceBuilder = new chrome.ServiceBuilder(
     process.env.CHROME_DRIVER_PATH
@@ -38,7 +36,6 @@ async function getDataFromGroup(id, groupUrl, shift) {
 
   const table = await driver.findElement(webdriver.By.id("member-table"));
   const data = await table.getText();
-  console.log(data);
 
   if (id === 1) {
     aaSubSet = data.split("\n").slice(0, 17);
