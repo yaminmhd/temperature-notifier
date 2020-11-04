@@ -11,7 +11,7 @@ function createWebDriver() {
   options.add_argument("--disable-gpu");
   options.add_argument("--no-sandbox");
 
-  let serviceBuilder = new chrome.ServiceBuilder(process.env.FIREFOX_BIN);
+  let serviceBuilder = new firefox.ServiceBuilder(process.env.FIREFOX_BIN);
 
   const firefoxDriver = new webdriver.Builder()
     .forBrowser("firefox")
