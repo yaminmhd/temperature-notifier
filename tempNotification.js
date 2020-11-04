@@ -9,6 +9,7 @@ function createWebDriver() {
   options.setChromeBinaryPath(process.env.CHROME_BINARY_PATH);
   options.addArguments("--headless");
   options.addArguments("--disable-gpu");
+  options.addArguments("--incognito");
   options.addArguments("--no-sandbox");
 
   let serviceBuilder = new chrome.ServiceBuilder(
@@ -20,6 +21,7 @@ function createWebDriver() {
     .setChromeOptions(options)
     .setChromeService(serviceBuilder)
     .build();
+
   return chromeDriver;
 }
 
@@ -61,8 +63,6 @@ function processData(id, shift, data) {
 
 async function getDataFromGroup(id, groupUrl, shift) {
   const driver = createWebDriver();
-  driver.manage().deleteAllCookies();
-  console.log("chrome driver created", driver);
   await driver.get(groupUrl);
   await driver.wait(
     webdriver.until.elementLocated(webdriver.By.id("member-table"))
