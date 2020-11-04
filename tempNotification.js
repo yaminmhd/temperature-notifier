@@ -8,6 +8,8 @@ function createWebDriver() {
   let options = new chrome.Options();
   options.setChromeBinaryPath(process.env.CHROME_BINARY_PATH);
   options.addArguments("--headless");
+  options.addArguments("--disable-gpu");
+  options.addArguments("--no-sandbox");
 
   let serviceBuilder = new chrome.ServiceBuilder(
     process.env.CHROME_DRIVER_PATH
@@ -21,46 +23,52 @@ function createWebDriver() {
   return chromeDriver;
 }
 
-async function getDataFromGroup(id, groupUrl, shift) {
-  let result = "";
+function processData(id, shift, data) {
   let stack = [];
   let aaSubSet;
   let tempSchedule;
+  let result = "";
 
+  let promise = new Promise(function (resolve, reject) {
+    if (id === 1) {
+      aaSubSet = data.split("\n").slice(0, 17);
+      aaSubSet.splice(15, 1);
+    } else {
+      aaSubSet = data.split("\n").slice(0, 16);
+      aaSubSet.splice(12, 1);
+      aaSubSet.splice(13, 1);
+    }
+
+    aaSubSet.forEach((row) => {
+      const newRow = row.substring(4);
+      const [name] = newRow.split(/\sNil|\s\d\d\.\d.\w/);
+      const a = newRow.split(" ");
+      stack.push(a);
+      const pmTemp = a.pop();
+      const amTemp = a.pop();
+      tempSchedule = shift === "am" ? amTemp : pmTemp;
+
+      if (tempSchedule === "Nil") {
+        result += `Inform ${name} to update ${shift} temp\n`;
+      }
+    });
+
+    setTimeout(() => resolve(result), 1000);
+  });
+
+  return promise;
+}
+
+async function getDataFromGroup(id, groupUrl, shift) {
   const driver = createWebDriver();
   console.log("chrome driver created", driver);
   await driver.get(groupUrl);
   await driver.wait(
     webdriver.until.elementLocated(webdriver.By.id("member-table"))
   );
-
   const table = await driver.findElement(webdriver.By.id("member-table"));
   const data = await table.getText();
-
-  if (id === 1) {
-    aaSubSet = data.split("\n").slice(0, 17);
-    aaSubSet.splice(15, 1);
-  } else {
-    aaSubSet = data.split("\n").slice(0, 16);
-    aaSubSet.splice(12, 1);
-    aaSubSet.splice(13, 1);
-  }
-
-  console.log(aaSubSet);
-
-  aaSubSet.forEach((row) => {
-    const newRow = row.substring(4);
-    const [name] = newRow.split(/\sNil|\s\d\d\.\d.\w/);
-    const a = newRow.split(" ");
-    stack.push(a);
-    const pmTemp = a.pop();
-    const amTemp = a.pop();
-    tempSchedule = shift === "am" ? amTemp : pmTemp;
-
-    if (tempSchedule === "Nil") {
-      result += `Inform ${name} to update ${shift} temp\n`;
-    }
-  });
+  const result = await processData(id, shift, data);
   await driver.quit();
   return result.length > 0 ? result : "All is ok!";
 }
