@@ -5,11 +5,18 @@ const group1Url = process.env.GROUP1_URL;
 const group2Url = process.env.GROUP2_URL;
 
 function createWebDriver() {
-  var options = new firefox.Options();
+  let options = new firefox.Options();
+  options.setBinary(process.env.GECKODRIVER_PATH);
   options.addArguments("-headless");
+  options.add_argument("--disable-gpu");
+  options.add_argument("--no-sandbox");
+
+  let serviceBuilder = new chrome.ServiceBuilder(process.env.FIREFOX_BIN);
+
   const firefoxDriver = new webdriver.Builder()
     .forBrowser("firefox")
     .setFirefoxOptions(options)
+    .setFirefoxService(serviceBuilder)
     .build();
   return firefoxDriver;
 }
