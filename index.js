@@ -22,7 +22,7 @@ const sendMessage = async () => {
 
 const getShift = () => {
   var nowHours = moment().get("hour");
-  return nowHours <= 12 ? "am" : "pm";
+  return nowHours < 12 ? "am" : "pm";
 };
 
 app.post("/check", async (req, res) => {

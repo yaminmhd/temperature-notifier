@@ -27,6 +27,7 @@ async function getDataFromGroup(id, groupUrl, shift) {
   let result = "";
   let stack = [];
   let aaSubSet;
+  let tempSchedule;
 
   const driver = createWebDriver();
   console.log("chrome driver created", driver);
@@ -37,15 +38,18 @@ async function getDataFromGroup(id, groupUrl, shift) {
 
   const table = await driver.findElement(webdriver.By.id("member-table"));
   const data = await table.getText();
+  console.log(data);
 
   if (id === 1) {
     aaSubSet = data.split("\n").slice(0, 17);
     aaSubSet.splice(15, 1);
   } else {
-    aaSubSet = data.split("\n").slice(0, 15);
+    aaSubSet = data.split("\n").slice(0, 16);
     aaSubSet.splice(12, 1);
-    aaSubSet.splice(14, 1);
+    aaSubSet.splice(13, 1);
   }
+
+  console.log(aaSubSet);
 
   aaSubSet.forEach((row) => {
     const newRow = row.substring(4);
@@ -54,10 +58,10 @@ async function getDataFromGroup(id, groupUrl, shift) {
     stack.push(a);
     const pmTemp = a.pop();
     const amTemp = a.pop();
-    const tempSchedule = shift === "am" ? amTemp : pmTemp;
+    tempSchedule = shift === "am" ? amTemp : pmTemp;
 
     if (tempSchedule === "Nil") {
-      result += `Inform ${name} to update temp\n`;
+      result += `Inform ${name} to update ${shift} temp\n`;
     }
   });
   await driver.quit();
