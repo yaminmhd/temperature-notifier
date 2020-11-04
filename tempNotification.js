@@ -7,9 +7,9 @@ const group2Url = process.env.GROUP2_URL;
 function createWebDriver() {
   let options = new firefox.Options();
   options.setBinary(process.env.GECKODRIVER_PATH);
-  options.addArguments("-headless");
-  options.add_argument("--disable-gpu");
-  options.add_argument("--no-sandbox");
+  options.addArguments("--headless");
+  options.addArguments("--disable-gpu");
+  options.addArguments("--no-sandbox");
 
   let serviceBuilder = new firefox.ServiceBuilder(process.env.FIREFOX_BIN);
 
